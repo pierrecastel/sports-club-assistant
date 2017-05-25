@@ -16,10 +16,10 @@ public class MemberDTO implements Serializable {
 
     private Long id;
 
-    @Size(min = 10, max = 20)
+    @Size(max = 20)
     private String phoneNumber;
 
-    @Size(min = 10, max = 20)
+    @Size(max = 20)
     private String mobilePhoneNumber;
 
     @Lob

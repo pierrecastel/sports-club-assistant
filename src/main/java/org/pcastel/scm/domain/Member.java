@@ -22,11 +22,11 @@ public class Member implements Serializable {
     @Id
     private Long id;
 
-    @Size(min = 10, max = 20)
+    @Size(max = 20)
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    @Size(min = 10, max = 20)
+    @Size(max = 20)
     @Column(name = "mobile_phone_number", length = 20)
     private String mobilePhoneNumber;
 
