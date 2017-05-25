@@ -1,0 +1,80 @@
+<div>
+    <h2 data-translate="scmApp.event.home.title">Events</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="event-scm.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span  data-translate="scmApp.event.home.createLabel">
+                        Create new Event
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
+                    <th jh-sort-by="id"><span data-translate="global.field.id">ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="title"><span data-translate="scmApp.event.title">Title</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="type"><span data-translate="scmApp.event.type">Type</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="date"><span data-translate="scmApp.event.date">Date</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="state"><span data-translate="scmApp.event.state">State</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="numberOfPlaces"><span data-translate="scmApp.event.numberOfPlaces">Number Of Places</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="isHome"><span data-translate="scmApp.event.isHome">Is Home</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="comment"><span data-translate="scmApp.event.comment">Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="teamId"><span data-translate="scmApp.event.team">Team</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="locationId"><span data-translate="scmApp.event.location">Location</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="event in vm.events track by event.id">
+                    <td><a ui-sref="event-scm-detail({id:event.id})">{{event.id}}</a></td>
+                    <td>{{event.title}}</td>
+                    <td data-translate="{{'scmApp.EventType.' + event.type}}">{{event.type}}</td>
+                        <td>{{event.date | date:'mediumDate'}}</td>
+                    <td data-translate="{{'scmApp.EventState.' + event.state}}">{{event.state}}</td>
+                    <td>{{event.numberOfPlaces}}</td>
+                    <td>{{event.isHome}}</td>
+                    <td>{{event.comment}}</td>
+                    <td>
+                        <a ui-sref="team-scm-detail({id:event.teamId})">{{event.teamId}}</a>
+                    </td>
+                    <td>
+                        <a ui-sref="location-scm-detail({id:event.locationId})">{{event.locationId}}</a>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="event-scm-detail({id:event.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.view"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="event-scm.edit({id:event.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.edit"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="event-scm.delete({id:event.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-sm-down" data-translate="entity.action.delete"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+        <uib-pagination class="pagination-sm" total-items="vm.totalItems" items-per-page="vm.itemsPerPage" ng-model="vm.page" ng-change="vm.transition()"></uib-pagination>
+    </div>
+</div>

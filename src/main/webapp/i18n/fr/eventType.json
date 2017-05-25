@@ -1,0 +1,12 @@
+{
+    "scmApp": {
+        "EventType" : {
+            "null": "",
+            "TRAINING": "TRAINING",
+            "MATCH": "MATCH",
+            "TOURNAMENT": "TOURNAMENT",
+            "CODIR": "CODIR",
+            "OTHER": "OTHER"
+        }
+    }
+}

@@ -1,0 +1,56 @@
+
+<div>
+    <h2><span data-translate="scmApp.member.detail.title">Member</span> {{vm.member.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span data-translate="scmApp.member.phoneNumber">Phone Number</span></dt>
+        <dd>
+            <span>{{vm.member.phoneNumber}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.member.mobilePhoneNumber">Mobile Phone Number</span></dt>
+        <dd>
+            <span>{{vm.member.mobilePhoneNumber}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.member.photo">Photo</span></dt>
+        <dd>
+            <div ng-if="vm.member.photo">
+                <a ng-click="vm.openFile(vm.member.photoContentType, vm.member.photo)">
+                    <img data-ng-src="{{'data:' + vm.member.photoContentType + ';base64,' + vm.member.photo}}" style="max-width: 100%;" alt="member image"/>
+                </a>
+                {{vm.member.photoContentType}}, {{vm.byteSize(vm.member.photo)}}
+            </div>
+        </dd>
+        <dt><span data-translate="scmApp.member.birthDate">Birth Date</span></dt>
+        <dd>
+            <span>{{vm.member.birthDate | date:'mediumDate'}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.member.job">Job</span></dt>
+        <dd>
+            <span>{{vm.member.job}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.member.showInfo">Show Info</span></dt>
+        <dd>
+            <span>{{vm.member.showInfo}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.member.user">User</span></dt>
+        <dd>
+            {{vm.member.userId}}
+        </dd>
+        <dt><span data-translate="scmApp.member.address">Address</span></dt>
+        <dd>
+            <a ui-sref="address-scm-detail({id:vm.member.addressId})">{{vm.member.addressId}}</a>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button" ui-sref="member-scm-detail.edit({id:vm.member.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down" data-translate="entity.action.edit"> Edit</span>
+    </button>
+</div>

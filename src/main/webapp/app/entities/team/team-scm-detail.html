@@ -1,0 +1,37 @@
+
+<div>
+    <h2><span data-translate="scmApp.team.detail.title">Team</span> {{vm.team.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span data-translate="scmApp.team.name">Name</span></dt>
+        <dd>
+            <span>{{vm.team.name}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.team.manager">Manager</span></dt>
+        <dd>
+            {{vm.team.managerId}}
+        </dd>
+        <dt><span data-translate="scmApp.team.substitute">Substitute</span></dt>
+        <dd>
+            {{vm.team.substituteId}}
+        </dd>
+        <dt><span data-translate="scmApp.team.member">Member</span></dt>
+        <dd>
+            <span ng-repeat="member in vm.team.members">
+                {{member.id}}{{$last ? '' : ', '}}
+            </span>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button" ui-sref="team-scm-detail.edit({id:vm.team.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down" data-translate="entity.action.edit"> Edit</span>
+    </button>
+</div>

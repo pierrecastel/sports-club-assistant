@@ -1,0 +1,61 @@
+
+<div>
+    <h2><span data-translate="scmApp.event.detail.title">Event</span> {{vm.event.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span data-translate="scmApp.event.title">Title</span></dt>
+        <dd>
+            <span>{{vm.event.title}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.type">Type</span></dt>
+        <dd>
+            <span data-translate="{{'scmApp.EventType.' + vm.event.type}}">{{vm.event.type}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.date">Date</span></dt>
+        <dd>
+            <span>{{vm.event.date | date:'mediumDate'}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.state">State</span></dt>
+        <dd>
+            <span data-translate="{{'scmApp.EventState.' + vm.event.state}}">{{vm.event.state}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.numberOfPlaces">Number Of Places</span></dt>
+        <dd>
+            <span>{{vm.event.numberOfPlaces}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.isHome">Is Home</span></dt>
+        <dd>
+            <span>{{vm.event.isHome}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.comment">Comment</span></dt>
+        <dd>
+            <span>{{vm.event.comment}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.event.team">Team</span></dt>
+        <dd>
+            <a ui-sref="team-scm-detail({id:vm.event.teamId})">{{vm.event.teamId}}</a>
+        </dd>
+        <dt><span data-translate="scmApp.event.location">Location</span></dt>
+        <dd>
+            <a ui-sref="location-scm-detail({id:vm.event.locationId})">{{vm.event.locationId}}</a>
+        </dd>
+        <dt><span data-translate="scmApp.event.participant">Participant</span></dt>
+        <dd>
+            <span ng-repeat="participant in vm.event.participants">
+                {{participant.id}}{{$last ? '' : ', '}}
+            </span>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button" ui-sref="event-scm-detail.edit({id:vm.event.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down" data-translate="entity.action.edit"> Edit</span>
+    </button>
+</div>

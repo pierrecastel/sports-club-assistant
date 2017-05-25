@@ -1,0 +1,12 @@
+{
+    "scmApp": {
+        "EventState" : {
+            "null": "",
+            "INIT": "INIT",
+            "OPEN": "OPEN",
+            "CLOSED": "CLOSED",
+            "ENDED": "ENDED",
+            "CANCELED": "CANCELED"
+        }
+    }
+}

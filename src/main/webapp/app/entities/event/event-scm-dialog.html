@@ -1,0 +1,129 @@
+
+<form name="editForm" role="form" novalidate ng-submit="vm.save()" show-validation>
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="vm.clear()">&times;</button>
+        <h4 class="modal-title" id="myEventLabel" data-translate="scmApp.event.home.createOrEditLabel">Create or edit a Event</h4>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" ng-show="vm.event.id">
+            <label for="id" data-translate="global.field.id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                    ng-model="vm.event.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.title" for="field_title">Title</label>
+            <input type="text" class="form-control" name="title" id="field_title"
+                    ng-model="vm.event.title"
+                    required ng-maxlength="100"/>
+            <div ng-show="editForm.title.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.title.$error.required" data-translate="entity.validation.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.title.$error.maxlength" data-translate="entity.validation.maxlength" translate-value-max="100">
+                    This field cannot be longer than 100 characters.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.type" for="field_type">Type</label>
+            <select class="form-control" name="type" ng-model="vm.event.type" id="field_type" required>
+                <option value="TRAINING" data-translate="scmApp.EventType.TRAINING">TRAINING</option>
+                <option value="MATCH" data-translate="scmApp.EventType.MATCH">MATCH</option>
+                <option value="TOURNAMENT" data-translate="scmApp.EventType.TOURNAMENT">TOURNAMENT</option>
+                <option value="CODIR" data-translate="scmApp.EventType.CODIR">CODIR</option>
+                <option value="OTHER" data-translate="scmApp.EventType.OTHER">OTHER</option>
+            </select>
+            <div ng-show="editForm.type.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.type.$error.required" data-translate="entity.validation.required">
+                    This field is required.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.date" for="field_date">Date</label>
+                <div class="input-group">
+                    <input id="field_date" type="text" class="form-control" name="date" uib-datepicker-popup="{{dateformat}}" ng-model="vm.event.date" is-open="vm.datePickerOpenStatus.date"
+                    required/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="vm.openCalendar('date')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+            <div ng-show="editForm.date.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.date.$error.required" data-translate="entity.validation.required">
+                    This field is required.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.state" for="field_state">State</label>
+            <select class="form-control" name="state" ng-model="vm.event.state" id="field_state" required>
+                <option value="INIT" data-translate="scmApp.EventState.INIT">INIT</option>
+                <option value="OPEN" data-translate="scmApp.EventState.OPEN">OPEN</option>
+                <option value="CLOSED" data-translate="scmApp.EventState.CLOSED">CLOSED</option>
+                <option value="ENDED" data-translate="scmApp.EventState.ENDED">ENDED</option>
+                <option value="CANCELED" data-translate="scmApp.EventState.CANCELED">CANCELED</option>
+            </select>
+            <div ng-show="editForm.state.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.state.$error.required" data-translate="entity.validation.required">
+                    This field is required.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.numberOfPlaces" for="field_numberOfPlaces">Number Of Places</label>
+            <input type="number" class="form-control" name="numberOfPlaces" id="field_numberOfPlaces"
+                    ng-model="vm.event.numberOfPlaces"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.isHome" for="field_isHome">Is Home</label>
+                <input type="checkbox" name="isHome" id="field_isHome"
+                          ng-model="vm.event.isHome"/>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.event.comment" for="field_comment">Comment</label>
+            <input type="text" class="form-control" name="comment" id="field_comment"
+                    ng-model="vm.event.comment"
+                    ng-maxlength="1000"/>
+            <div ng-show="editForm.comment.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.comment.$error.maxlength" data-translate="entity.validation.maxlength" translate-value-max="1000">
+                    This field cannot be longer than 1000 characters.
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label data-translate="scmApp.event.team" for="field_team">Team</label>
+            <select class="form-control" id="field_team" name="team" ng-model="vm.event.teamId" ng-options="team.id as team.id for team in vm.teams"            >
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label data-translate="scmApp.event.location" for="field_location">Location</label>
+            <select class="form-control" id="field_location" name="location" ng-model="vm.event.locationId" ng-options="location.id as location.id for location in vm.locations"            >
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label data-translate="scmApp.event.participant" for="field_participant">Participant</label>
+            <select class="form-control" id="field_participant" multiple name="participant" ng-model="vm.event.participants" ng-options="user as user.id for user in vm.users track by user.id"></select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+        </button>
+        <button type="submit" ng-disabled="editForm.$invalid || vm.isSaving" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>&nbsp;<span data-translate="entity.action.save">Save</span>
+        </button>
+    </div>
+</form>

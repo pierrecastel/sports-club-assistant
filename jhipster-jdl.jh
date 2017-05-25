@@ -1,0 +1,71 @@
+entity Member {
+	phoneNumber String minlength(10) maxlength(20),
+	mobilePhoneNumber String minlength(10) maxlength(20),
+	photo ImageBlob,
+	birthDate LocalDate,
+	job String,
+	showInfo Boolean
+}
+
+entity Address {
+	street String maxlength(200) required,
+	zipCode String minlength(5) maxlength(5) required,
+	city String maxlength(100) required
+}
+
+entity Event {
+	title String maxlength(100) required,
+	type EventType required,
+	date LocalDate required,
+	state EventState required,
+	numberOfPlaces Integer,
+	isHome Boolean,
+	comment String maxlength(1000)
+}
+
+entity Location {
+	title String maxlength(100) required,
+}
+
+enum EventType {
+    TRAINING, MATCH, TOURNAMENT, CODIR, OTHER
+}
+
+enum EventState {
+    INIT, OPEN, CLOSED, ENDED, CANCELED
+}
+
+entity Team {
+	name String maxlength(100) required
+}
+
+relationship OneToOne {
+	Member{user} to User,
+	Member{address} to Address,
+	Location{address} to Address
+}
+
+relationship ManyToOne {
+	Team{manager} to User,
+	Team{substitute} to User,
+	Event{team} to Team,
+	Event{location} to Location
+}
+
+relationship ManyToMany {
+	Team{member} to User,
+	Event{participant} to User
+}
+
+// Set pagination options
+paginate Team with infinite-scroll
+paginate Event with pagination
+
+// set DTO option
+dto * with mapstruct
+
+// Set service options to all
+service * with serviceImpl
+
+// Set an angular suffix
+angularSuffix * with scm
