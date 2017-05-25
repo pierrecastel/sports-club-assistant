@@ -1,15 +1,16 @@
 package org.pcastel.scm.service;
 
+import org.pcastel.scm.config.Constants;
 import org.pcastel.scm.domain.Authority;
+import org.pcastel.scm.domain.Member;
 import org.pcastel.scm.domain.User;
 import org.pcastel.scm.repository.AuthorityRepository;
-import org.pcastel.scm.config.Constants;
+import org.pcastel.scm.repository.MemberRepository;
 import org.pcastel.scm.repository.UserRepository;
 import org.pcastel.scm.security.AuthoritiesConstants;
 import org.pcastel.scm.security.SecurityUtils;
-import org.pcastel.scm.service.util.RandomUtil;
 import org.pcastel.scm.service.dto.UserDTO;
-
+import org.pcastel.scm.service.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -39,10 +40,14 @@ public class UserService {
 
     private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
+    private final MemberRepository memberRepository;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository
+        , MemberRepository memberRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
+        this.memberRepository = memberRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -81,7 +86,7 @@ public class UserService {
     }
 
     public User createUser(String login, String password, String firstName, String lastName, String email,
-        String imageUrl, String langKey) {
+                           String imageUrl, String langKey, String phoneNumber) {
 
         User newUser = new User();
         Authority authority = authorityRepository.findOne(AuthoritiesConstants.USER);
@@ -101,8 +106,16 @@ public class UserService {
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         authorities.add(authority);
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
+        final User createdUser = userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
+
+        // Create and save the UserExtra entity
+        final Member newMember = new Member();
+        newMember.setUser(createdUser);
+        newMember.setPhoneNumber(phoneNumber);
+        memberRepository.save(newMember);
+        log.debug("Created Information for Member: {}", newMember);
+
         return newUser;
     }
 

@@ -61,6 +61,9 @@ public class UserResourceIntTest {
     private static final String DEFAULT_EMAIL = "johndoe@localhost";
     private static final String UPDATED_EMAIL = "jhipster@localhost";
 
+    private static final String DEFAULT_PHONENUMBER = "0123456789";
+    private static final String UPDATED_PHONENUMBER = "1234567890";
+
     private static final String DEFAULT_FIRSTNAME = "john";
     private static final String UPDATED_FIRSTNAME = "jhipsterFirstName";
 
@@ -151,6 +154,7 @@ public class UserResourceIntTest {
             DEFAULT_FIRSTNAME,
             DEFAULT_LASTNAME,
             DEFAULT_EMAIL,
+            DEFAULT_PHONENUMBER,
             true,
             DEFAULT_IMAGEURL,
             DEFAULT_LANGKEY,
@@ -191,6 +195,7 @@ public class UserResourceIntTest {
             DEFAULT_FIRSTNAME,
             DEFAULT_LASTNAME,
             DEFAULT_EMAIL,
+            DEFAULT_PHONENUMBER,
             true,
             DEFAULT_IMAGEURL,
             DEFAULT_LANGKEY,
@@ -227,6 +232,7 @@ public class UserResourceIntTest {
             DEFAULT_FIRSTNAME,
             DEFAULT_LASTNAME,
             "anothermail@localhost",
+            DEFAULT_PHONENUMBER,
             true,
             DEFAULT_IMAGEURL,
             DEFAULT_LANGKEY,
@@ -263,6 +269,7 @@ public class UserResourceIntTest {
             DEFAULT_FIRSTNAME,
             DEFAULT_LASTNAME,
             DEFAULT_EMAIL, // this email should already be used
+            DEFAULT_PHONENUMBER,
             true,
             DEFAULT_IMAGEURL,
             DEFAULT_LANGKEY,
@@ -346,6 +353,7 @@ public class UserResourceIntTest {
             UPDATED_FIRSTNAME,
             UPDATED_LASTNAME,
             UPDATED_EMAIL,
+            UPDATED_PHONENUMBER,
             updatedUser.getActivated(),
             UPDATED_IMAGEURL,
             UPDATED_LANGKEY,
@@ -390,6 +398,7 @@ public class UserResourceIntTest {
             UPDATED_FIRSTNAME,
             UPDATED_LASTNAME,
             UPDATED_EMAIL,
+            UPDATED_PHONENUMBER,
             updatedUser.getActivated(),
             UPDATED_IMAGEURL,
             UPDATED_LANGKEY,
@@ -445,6 +454,7 @@ public class UserResourceIntTest {
             updatedUser.getFirstName(),
             updatedUser.getLastName(),
             "jhipster@localhost",  // this email should already be used by anotherUser
+            DEFAULT_PHONENUMBER, //TODO à revoir
             updatedUser.getActivated(),
             updatedUser.getImageUrl(),
             updatedUser.getLangKey(),
@@ -489,6 +499,7 @@ public class UserResourceIntTest {
             updatedUser.getFirstName(),
             updatedUser.getLastName(),
             updatedUser.getEmail(),
+            UPDATED_PHONENUMBER, //TODO à revoir
             updatedUser.getActivated(),
             updatedUser.getImageUrl(),
             updatedUser.getLangKey(),

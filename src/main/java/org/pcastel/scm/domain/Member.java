@@ -4,7 +4,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -20,7 +20,6 @@ public class Member implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(min = 10, max = 20)
@@ -48,7 +47,7 @@ public class Member implements Serializable {
     private Boolean showInfo;
 
     @OneToOne
-    @JoinColumn(unique = true)
+    @MapsId
     private User user;
 
     @OneToOne
