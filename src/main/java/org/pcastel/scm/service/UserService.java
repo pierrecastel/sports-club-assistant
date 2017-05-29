@@ -198,6 +198,7 @@ public class UserService {
 
     public void deleteUser(String login) {
         userRepository.findOneByLogin(login).ifPresent(user -> {
+            memberRepository.delete(user.getId());
             userRepository.delete(user);
             log.debug("Deleted User: {}", user);
         });
@@ -243,6 +244,7 @@ public class UserService {
         List<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(Instant.now().minus(3, ChronoUnit.DAYS));
         for (User user : users) {
             log.debug("Deleting not activated user {}", user.getLogin());
+            memberRepository.delete(user.getId());
             userRepository.delete(user);
         }
     }

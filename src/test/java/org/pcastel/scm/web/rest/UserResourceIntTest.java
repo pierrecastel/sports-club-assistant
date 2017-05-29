@@ -2,7 +2,9 @@ package org.pcastel.scm.web.rest;
 
 import org.pcastel.scm.ScmApp;
 import org.pcastel.scm.domain.Authority;
+import org.pcastel.scm.domain.Member;
 import org.pcastel.scm.domain.User;
+import org.pcastel.scm.repository.MemberRepository;
 import org.pcastel.scm.repository.UserRepository;
 import org.pcastel.scm.security.AuthoritiesConstants;
 import org.pcastel.scm.service.MailService;
@@ -78,6 +80,9 @@ public class UserResourceIntTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private MailService mailService;
@@ -520,6 +525,10 @@ public class UserResourceIntTest {
     public void deleteUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
+        Member member = new Member();
+        member.setUser(user);
+        memberRepository.saveAndFlush(member);
+
         int databaseSizeBeforeDelete = userRepository.findAll().size();
 
         // Delete the user
