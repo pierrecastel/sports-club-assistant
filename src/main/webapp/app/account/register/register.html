@@ -111,6 +111,25 @@
                         </p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="control-label" for="phoneNumber" data-translate="global.form.phonenumber">Phone Number</label>
+                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="{{'global.form.phonenumber.placeholder' | translate}}"
+                           ng-model="vm.registerAccount.phoneNumber" ng-minlength=10 ng-maxlength=20 required>
+                    <div ng-show="form.phonenumber.$dirty && form.phonenumber.$invalid">
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.required" data-translate="global.messages.validate.phonenumber.required">
+                            Your phone number is required.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.minlength" data-translate="global.messages.validate.phonenumber.minlength">
+                            Your phone number is required to be at least 10 characters.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.maxlength" data-translate="global.messages.validate.phonenumber.maxlength">
+                            Your phone number cannot be longer than 20 characters.
+                        </p>
+                    </div>
+                </div>
 
                 <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary" data-translate="register.form.button">Register</button>
             </form>

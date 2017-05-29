@@ -11,6 +11,7 @@ import org.pcastel.scm.security.AuthoritiesConstants;
 import org.pcastel.scm.security.SecurityUtils;
 import org.pcastel.scm.service.dto.UserDTO;
 import org.pcastel.scm.service.util.RandomUtil;
+import org.pcastel.scm.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -119,21 +120,21 @@ public class UserService {
         return newUser;
     }
 
-    public User createUser(UserDTO userDTO) {
+    public User createUser(ManagedUserVM managedUserVM) {
         User user = new User();
-        user.setLogin(userDTO.getLogin());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail());
-        user.setImageUrl(userDTO.getImageUrl());
-        if (userDTO.getLangKey() == null) {
+        user.setLogin(managedUserVM.getLogin());
+        user.setFirstName(managedUserVM.getFirstName());
+        user.setLastName(managedUserVM.getLastName());
+        user.setEmail(managedUserVM.getEmail());
+        user.setImageUrl(managedUserVM.getImageUrl());
+        if (managedUserVM.getLangKey() == null) {
             user.setLangKey("fr"); // default language
         } else {
-            user.setLangKey(userDTO.getLangKey());
+            user.setLangKey(managedUserVM.getLangKey());
         }
-        if (userDTO.getAuthorities() != null) {
+        if (managedUserVM.getAuthorities() != null) {
             Set<Authority> authorities = new HashSet<>();
-            userDTO.getAuthorities().forEach(
+            managedUserVM.getAuthorities().forEach(
                 authority -> authorities.add(authorityRepository.findOne(authority))
             );
             user.setAuthorities(authorities);
@@ -145,6 +146,14 @@ public class UserService {
         user.setActivated(true);
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
+
+        // Create and save the UserExtra entity
+        final Member newMember = new Member();
+        newMember.setUser(user);
+        newMember.setPhoneNumber(managedUserVM.getPhoneNumber());
+        memberRepository.save(newMember);
+        log.debug("Created Information for Member: {}", newMember);
+
         return user;
     }
 
