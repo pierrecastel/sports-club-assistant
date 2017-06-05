@@ -1,0 +1,27 @@
+
+<div>
+    <h2><span data-translate="scmApp.location.detail.title">Location</span> {{vm.location.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span data-translate="scmApp.location.title">Title</span></dt>
+        <dd>
+            <span>{{vm.location.title}}</span>
+        </dd>
+        <dt><span data-translate="scmApp.location.address">Address</span></dt>
+        <dd>
+            <a ui-sref="address-scm-detail({id:vm.location.addressId})">{{vm.location.addressId}}</a>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button" ui-sref="location-scm-detail.edit({id:vm.location.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down" data-translate="entity.action.edit"> Edit</span>
+    </button>
+</div>

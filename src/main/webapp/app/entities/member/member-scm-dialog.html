@@ -1,0 +1,113 @@
+
+<form name="editForm" role="form" novalidate ng-submit="vm.save()" show-validation>
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="vm.clear()">&times;</button>
+        <h4 class="modal-title" id="myMemberLabel" data-translate="scmApp.member.home.createOrEditLabel">Create or edit a Member</h4>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" ng-show="vm.member.id">
+            <label for="id" data-translate="global.field.id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                    ng-model="vm.member.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.member.phoneNumber" for="field_phoneNumber">Phone Number</label>
+            <input type="text" class="form-control" name="phoneNumber" id="field_phoneNumber"
+                    ng-model="vm.member.phoneNumber"
+                    ng-minlength="10" ng-maxlength="20"/>
+            <div ng-show="editForm.phoneNumber.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.phoneNumber.$error.minlength" data-translate="entity.validation.minlength" translate-value-min="10">
+                    This field is required to be at least 10 characters.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.phoneNumber.$error.maxlength" data-translate="entity.validation.maxlength" translate-value-max="20">
+                    This field cannot be longer than 20 characters.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.member.mobilePhoneNumber" for="field_mobilePhoneNumber">Mobile Phone Number</label>
+            <input type="text" class="form-control" name="mobilePhoneNumber" id="field_mobilePhoneNumber"
+                    ng-model="vm.member.mobilePhoneNumber"
+                    ng-minlength="10" ng-maxlength="20"/>
+            <div ng-show="editForm.mobilePhoneNumber.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.mobilePhoneNumber.$error.minlength" data-translate="entity.validation.minlength" translate-value-min="10">
+                    This field is required to be at least 10 characters.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.mobilePhoneNumber.$error.maxlength" data-translate="entity.validation.maxlength" translate-value-max="20">
+                    This field cannot be longer than 20 characters.
+                </p>
+            </div>
+        </div>
+        <div class="form-group" ngf-drop ngf-change="vm.setPhoto($file, vm.member)" ngf-pattern="'image/*'">
+            <label class="control-label" data-translate="scmApp.member.photo" for="field_photo">Photo</label>
+            <div>
+                <img data-ng-src="{{'data:' + vm.member.photoContentType + ';base64,' + vm.member.photo}}" style="max-height: 100px;" ng-if="vm.member.photo" alt="member image"/>
+                <div ng-if="vm.member.photo" class="help-block clearfix">
+                    <span class="pull-left">{{vm.member.photoContentType}}, {{vm.byteSize(vm.member.photo)}}</span>
+                    <button type="button" ng-click="vm.member.photo=null;vm.member.photoContentType=null;"
+                            class="btn btn-default btn-xs pull-right">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </div>
+                <button type="button" ngf-select class="btn btn-default btn-block"
+                        ngf-change="vm.setPhoto($file, vm.member)" accept="image/*" data-translate="entity.action.addimage">
+                    Add image
+                </button>
+            </div>
+            <input type="hidden" class="form-control" name="photo" id="field_photo"
+                    ng-model="vm.member.photo"
+                    />
+            <input type="hidden" class="form-control" name="photoContentType" id="field_photoContentType"
+                    ng-model="vm.member.photoContentType" />
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.member.birthDate" for="field_birthDate">Birth Date</label>
+                <div class="input-group">
+                    <input id="field_birthDate" type="text" class="form-control" name="birthDate" uib-datepicker-popup="{{dateformat}}" ng-model="vm.member.birthDate" is-open="vm.datePickerOpenStatus.birthDate"
+                    />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="vm.openCalendar('birthDate')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.member.job" for="field_job">Job</label>
+            <input type="text" class="form-control" name="job" id="field_job"
+                    ng-model="vm.member.job"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" data-translate="scmApp.member.showInfo" for="field_showInfo">Show Info</label>
+                <input type="checkbox" name="showInfo" id="field_showInfo"
+                          ng-model="vm.member.showInfo"/>
+        </div>
+
+        <div class="form-group">
+            <label data-translate="scmApp.member.user" for="field_user">User</label>
+            <select class="form-control" id="field_user" name="user" ng-model="vm.member.userId" ng-options="user.id as user.id for user in vm.users"            >
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label data-translate="scmApp.member.address" for="field_address">Address</label>
+            <select class="form-control" id="field_address" name="address" ng-model="vm.member.addressId" ng-options="address.id as address.id for address in vm.addresses | orderBy:'id'">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+        </button>
+        <button type="submit" ng-disabled="editForm.$invalid || vm.isSaving" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>&nbsp;<span data-translate="entity.action.save">Save</span>
+        </button>
+    </div>
+</form>
