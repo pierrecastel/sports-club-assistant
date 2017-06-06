@@ -10,6 +10,7 @@ import org.pcastel.scm.repository.UserRepository;
 import org.pcastel.scm.security.AuthoritiesConstants;
 import org.pcastel.scm.security.SecurityUtils;
 import org.pcastel.scm.service.dto.UserDTO;
+import org.pcastel.scm.service.mapper.MemberMapper;
 import org.pcastel.scm.service.util.RandomUtil;
 import org.pcastel.scm.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
@@ -23,7 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,12 +48,15 @@ public class UserService {
 
     private final MemberRepository memberRepository;
 
+    private final MemberMapper memberMapper;
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository
-        , MemberRepository memberRepository) {
+        , MemberRepository memberRepository, MemberMapper memberMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.memberRepository = memberRepository;
+        this.memberMapper = memberMapper;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -64,16 +72,16 @@ public class UserService {
     }
 
     public Optional<User> completePasswordReset(String newPassword, String key) {
-       log.debug("Reset user password for reset key {}", key);
+        log.debug("Reset user password for reset key {}", key);
 
-       return userRepository.findOneByResetKey(key)
-           .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400)))
-           .map(user -> {
+        return userRepository.findOneByResetKey(key)
+            .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400)))
+            .map(user -> {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
                 user.setResetDate(null);
                 return user;
-           });
+            });
     }
 
     public Optional<User> requestPasswordReset(String mail) {
@@ -148,61 +156,75 @@ public class UserService {
         log.debug("Created Information for User: {}", user);
 
         // Create and save the UserExtra entity
-        final Member newMember = new Member();
-        newMember.setUser(user);
-        newMember.setPhoneNumber(managedUserVM.getPhoneNumber());
-        memberRepository.save(newMember);
-        log.debug("Created Information for Member: {}", newMember);
+        updateMember(managedUserVM, user);
 
         return user;
     }
 
     /**
-     * Update basic information (first name, last name, email, language) for the current user.
+     * Update basic information for the current user.
      *
-     * @param firstName first name of user
-     * @param lastName last name of user
-     * @param email email id of user
-     * @param langKey language key
-     * @param imageUrl image URL of user
+     * @param managedUserVM the managed user vm
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+    public void updateCurrentUser(ManagedUserVM managedUserVM) {
         userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setLangKey(langKey);
-            user.setImageUrl(imageUrl);
+            user.setFirstName(managedUserVM.getFirstName());
+            user.setLastName(managedUserVM.getLastName());
+            user.setEmail(managedUserVM.getEmail());
+            user.setLangKey(managedUserVM.getLangKey());
+            user.setImageUrl(managedUserVM.getImageUrl());
             log.debug("Changed Information for User: {}", user);
+
+            // Create and save the UserExtra entity
+            updateMember(managedUserVM, user);
         });
     }
 
     /**
      * Update all information for a specific user, and return the modified user.
      *
-     * @param userDTO user to update
+     * @param managedUserVM user to update
      * @return updated user
      */
-    public Optional<UserDTO> updateUser(UserDTO userDTO) {
+    public Optional<ManagedUserVM> updateUser(ManagedUserVM managedUserVM) {
         return Optional.of(userRepository
-            .findOne(userDTO.getId()))
+            .findOne(managedUserVM.getId()))
             .map(user -> {
-                user.setLogin(userDTO.getLogin());
-                user.setFirstName(userDTO.getFirstName());
-                user.setLastName(userDTO.getLastName());
-                user.setEmail(userDTO.getEmail());
-                user.setImageUrl(userDTO.getImageUrl());
-                user.setActivated(userDTO.isActivated());
-                user.setLangKey(userDTO.getLangKey());
+                user.setLogin(managedUserVM.getLogin());
+                user.setFirstName(managedUserVM.getFirstName());
+                user.setLastName(managedUserVM.getLastName());
+                user.setEmail(managedUserVM.getEmail());
+                user.setImageUrl(managedUserVM.getImageUrl());
+                user.setActivated(managedUserVM.isActivated());
+                user.setLangKey(managedUserVM.getLangKey());
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
-                userDTO.getAuthorities().stream()
+                managedUserVM.getAuthorities().stream()
                     .map(authorityRepository::findOne)
                     .forEach(managedAuthorities::add);
-                log.debug("Changed Information for User: {}", user);
                 return user;
             })
-            .map(UserDTO::new);
+            .map(updateMemberAndMapToManagedUserVm(managedUserVM));
+    }
+
+    private Function<User, ManagedUserVM> updateMemberAndMapToManagedUserVm(ManagedUserVM managedUserVM) {
+        return u -> {
+            final Member newMember = updateMember(managedUserVM, u);
+            ManagedUserVM newManagedUserVM = new ManagedUserVM(new UserDTO(u), memberMapper.toDto(newMember));
+            log.debug("Changed Information for User: {}", newManagedUserVM);
+            return newManagedUserVM;
+        };
+    }
+
+    private Member updateMember(ManagedUserVM managedUserVM, User user) {
+        final Member member = Optional.of(memberRepository
+            .findOne(user.getId()))
+            .orElseGet(Member::new);
+        member.setUser(user);
+        member.setPhoneNumber(managedUserVM.getPhoneNumber());
+        memberRepository.save(member);
+        log.debug("Created Information for Member: {}", member);
+        return member;
     }
 
     public void deleteUser(String login) {

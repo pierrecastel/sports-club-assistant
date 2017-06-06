@@ -136,8 +136,7 @@ public class AccountResource {
         return userRepository
             .findOneByLogin(userLogin)
             .map(u -> {
-                userService.updateUser(managedUserVM.getFirstName(), managedUserVM.getLastName(), managedUserVM.getEmail(),
-                    managedUserVM.getLangKey(), managedUserVM.getImageUrl());
+                userService.updateCurrentUser(managedUserVM);
                 return new ResponseEntity(HttpStatus.OK);
             })
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));

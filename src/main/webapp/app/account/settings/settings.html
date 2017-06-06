@@ -73,6 +73,49 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label" for="imageUrl" data-translate="global.form.imageurl">ImageUrl</label>
+                    <input type="url" class="form-control" id="imageUrl" name="imageUrl" placeholder="{{'global.form.imageurl.placeholder' | translate}}"
+                           ng-model="vm.settingsAccount.imageUrl" ng-maxlength=100 required maxlength="100">
+                    <img ng-if="vm.settingsAccount.imageUrl" data-ng-src="{{vm.settingsAccount.imageUrl}}_s.jpg" alt="{{'global.form.imageurl' | translate}}">
+                    <div ng-show="form.imageUrl.$dirty && form.imageUrl.$invalid">
+                        <p class="help-block"
+                               ng-show="form.imageUrl.$error.required" data-translate="global.messages.validate.imageurl.required">
+                            Your image Url is required.
+                        </p>
+                        <p class="help-block"
+                               ng-show="form.imageUrl.$error.url" data-translate="global.messages.validate.imageurl.invalid">
+                            Your image Url is invalid.
+                        </p>
+                        <p class="help-block"
+                               ng-show="form.imageUrl.$error.imageUrl" data-translate="global.messages.validate.imageurl.invalid">
+                            Your image Url is invalid.
+                        </p>
+                        <p class="help-block"
+                               ng-show="form.imageUrl.$error.maxlength" data-translate="global.messages.validate.imageurl.maxlength">
+                            Your image Url cannot be longer than 100 characters.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="phoneNumber" data-translate="global.form.phonenumber">Phone Number</label>
+                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="{{'global.form.phonenumber.placeholder' | translate}}"
+                           ng-model="vm.settingsAccount.phoneNumber" ng-minlength=10 ng-maxlength=20 required>
+                    <div ng-show="form.phonenumber.$dirty && form.phonenumber.$invalid">
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.required" data-translate="global.messages.validate.phonenumber.required">
+                            Your phone number is required.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.minlength" data-translate="global.messages.validate.phonenumber.minlength">
+                            Your phone number is required to be at least 10 characters.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.maxlength" data-translate="global.messages.validate.phonenumber.maxlength">
+                            Your phone number cannot be longer than 20 characters.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="langKey" data-translate="settings.form.language">Language</label>
                     <select id="langKey" name="langKey" class="form-control" ng-model="vm.settingsAccount.langKey" ng-controller="JhiLanguageController as languageVm" ng-options="code as (code | findLanguageFromKey) for code in languageVm.languages"></select>
                 </div>
