@@ -1,5 +1,6 @@
 package org.pcastel.scm.web.rest.vm;
 
+import org.pcastel.scm.service.dto.MemberDTO;
 import org.pcastel.scm.service.dto.UserDTO;
 
 import javax.validation.constraints.Size;
@@ -29,7 +30,6 @@ public class ManagedUserVM extends UserDTO {
     private Long addressId;
 
 
-
     public ManagedUserVM() {
         // Empty constructor needed for Jackson.
     }
@@ -52,7 +52,7 @@ public class ManagedUserVM extends UserDTO {
 
 
         super(id, login, firstName, lastName, email, activated, imageUrl, langKey,
-            createdBy, createdDate, lastModifiedBy, lastModifiedDate,  authorities);
+            createdBy, createdDate, lastModifiedBy, lastModifiedDate, authorities);
 
         this.password = password;
         this.phoneNumber = phoneNumber;
@@ -64,6 +64,15 @@ public class ManagedUserVM extends UserDTO {
         this.showInfo = showInfo;
         this.addressId = addressId;
 
+    }
+
+    public ManagedUserVM(UserDTO userDTO, MemberDTO memberDTO) {
+        this(userDTO.getId(), userDTO.getLogin(), null, userDTO.getFirstName(), userDTO.getLastName(),
+            userDTO.getEmail(), memberDTO.getPhoneNumber(), memberDTO.getMobilePhoneNumber(), memberDTO.getPhoto(),
+            memberDTO.getPhotoContentType(), memberDTO.getBirthDate(), memberDTO.getJob(), memberDTO.isShowInfo(),
+            memberDTO.getAddressId(), userDTO.isActivated(), userDTO.getImageUrl(), userDTO.getLangKey(),
+            userDTO.getCreatedBy(), userDTO.getCreatedDate(), userDTO.getLastModifiedBy(),
+            userDTO.getLastModifiedDate(), userDTO.getAuthorities());
     }
 
     public String getPassword() {

@@ -47,6 +47,8 @@
             "confirmpassword.placeholder": "Confirmation du nouveau mot de passe",
             "email": "Email",
             "email.placeholder": "Votre email",
+            "imageurl": "Photo",
+            "imageurl.placeholder": "Votre photo",
             "phonenumber": "Numéro de téléphone",
             "phonenumber.placeholder": "Votre numéro de téléphone"
         },
@@ -95,6 +97,7 @@
         "action": {
             "addblob": "Ajouter blob",
             "addimage": "Ajouter image",
+            "modifyimage": "Modifier image",
             "back": "Retour",
             "cancel": "Annuler",
             "edit": "Editer",

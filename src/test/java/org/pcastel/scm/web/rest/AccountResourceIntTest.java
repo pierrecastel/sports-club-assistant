@@ -14,6 +14,7 @@ import org.pcastel.scm.repository.UserRepository;
 import org.pcastel.scm.security.AuthoritiesConstants;
 import org.pcastel.scm.service.MailService;
 import org.pcastel.scm.service.UserService;
+import org.pcastel.scm.service.dto.MemberDTO;
 import org.pcastel.scm.service.dto.UserDTO;
 import org.pcastel.scm.web.rest.vm.KeyAndPasswordVM;
 import org.pcastel.scm.web.rest.vm.ManagedUserVM;
@@ -130,7 +131,7 @@ public class AccountResourceIntTest {
         user.setImageUrl("http://placehold.it/50x50");
         user.setLangKey("en");
         user.setAuthorities(authorities);
-        when(mockUserService.getUserWithAuthorities()).thenReturn(user);
+        when(mockUserService.getManagedUser()).thenReturn(new ManagedUserVM(new UserDTO(user), new MemberDTO()));
 
         restUserMockMvc.perform(get("/api/account")
             .accept(MediaType.APPLICATION_JSON))

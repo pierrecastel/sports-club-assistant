@@ -10,7 +10,23 @@
            <jhi-alert-error></jhi-alert-error>
 
             <form name="form" role="form" novalidate ng-submit="vm.save()" show-validation>
-
+                <div class="form-group" ngf-drop ngf-change="vm.setPhoto($file)" ngf-pattern="'image/*'">
+                    <label class="control-label" data-translate="settings.form.photo" for="field_photo">Photo</label>
+                    <div>
+                        <img ng-class="{'img-circle': !vm.photoModified}" data-ng-src="{{'data:' + vm.settingsAccount.photoContentType + ';base64,' + vm.settingsAccount.photo}}"
+                            style="max-height: 100px;" ng-if="vm.settingsAccount.photo" alt="member image" />
+                        <div ng-if="vm.settingsAccount.photo" class="help-block clearfix">
+                            <button type="button" ng-click="vm.settingsAccount.photo=null;vm.settingsAccount.photoContentType=null;" class="btn btn-default btn-xs pull-right">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </div>
+                        <button type="button" ngf-select class="btn btn-default btn-block" ngf-change="vm.setPhoto($file)" accept="image/*" data-translate="entity.action.{{vm.settingsAccount.photo != null?'modify':'add'}}image">
+                            Add image
+                        </button>
+                    </div>
+                    <input type="hidden" class="form-control" name="photo" id="field_photo" ng-model="vm.settingsAccount.photo" />
+                    <input type="hidden" class="form-control" name="photoContentType" id="field_photoContentType" ng-model="vm.settingsAccount.photoContentType" />
+                </div>
                 <div class="form-group">
                     <label class="control-label" for="firstName" data-translate="settings.form.firstname">First Name</label>
                     <input type="text" class="form-control" id="firstName" name="firstName" placeholder="{{'settings.form.firstname.placeholder' | translate}}"
@@ -69,6 +85,25 @@
                         <p class="help-block"
                                ng-show="form.email.$error.maxlength" data-translate="global.messages.validate.email.maxlength">
                             Your email cannot be longer than 100 characters.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="phoneNumber" data-translate="global.form.phonenumber">Phone Number</label>
+                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="{{'global.form.phonenumber.placeholder' | translate}}"
+                           ng-model="vm.settingsAccount.phoneNumber" ng-minlength=10 ng-maxlength=20 required>
+                    <div ng-show="form.phonenumber.$dirty && form.phonenumber.$invalid">
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.required" data-translate="global.messages.validate.phonenumber.required">
+                            Your phone number is required.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.minlength" data-translate="global.messages.validate.phonenumber.minlength">
+                            Your phone number is required to be at least 10 characters.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.phonenumber.$error.maxlength" data-translate="global.messages.validate.phonenumber.maxlength">
+                            Your phone number cannot be longer than 20 characters.
                         </p>
                     </div>
                 </div>

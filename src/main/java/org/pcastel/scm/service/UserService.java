@@ -10,6 +10,7 @@ import org.pcastel.scm.repository.UserRepository;
 import org.pcastel.scm.security.AuthoritiesConstants;
 import org.pcastel.scm.security.SecurityUtils;
 import org.pcastel.scm.service.dto.UserDTO;
+import org.pcastel.scm.service.mapper.MemberMapper;
 import org.pcastel.scm.service.util.RandomUtil;
 import org.pcastel.scm.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
@@ -21,10 +22,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.lang.StrictMath.min;
 
 /**
  * Service class for managing users.
@@ -33,6 +47,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserService {
 
+    private static final int IMG_DIMENSION = 300;
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
@@ -43,12 +58,15 @@ public class UserService {
 
     private final MemberRepository memberRepository;
 
+    private final MemberMapper memberMapper;
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository
-        , MemberRepository memberRepository) {
+        , MemberRepository memberRepository, MemberMapper memberMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.memberRepository = memberRepository;
+        this.memberMapper = memberMapper;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -64,16 +82,16 @@ public class UserService {
     }
 
     public Optional<User> completePasswordReset(String newPassword, String key) {
-       log.debug("Reset user password for reset key {}", key);
+        log.debug("Reset user password for reset key {}", key);
 
-       return userRepository.findOneByResetKey(key)
-           .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400)))
-           .map(user -> {
+        return userRepository.findOneByResetKey(key)
+            .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400)))
+            .map(user -> {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
                 user.setResetDate(null);
                 return user;
-           });
+            });
     }
 
     public Optional<User> requestPasswordReset(String mail) {
@@ -148,61 +166,131 @@ public class UserService {
         log.debug("Created Information for User: {}", user);
 
         // Create and save the UserExtra entity
-        final Member newMember = new Member();
-        newMember.setUser(user);
-        newMember.setPhoneNumber(managedUserVM.getPhoneNumber());
-        memberRepository.save(newMember);
-        log.debug("Created Information for Member: {}", newMember);
+        updateMember(managedUserVM, user);
 
         return user;
     }
 
     /**
-     * Update basic information (first name, last name, email, language) for the current user.
+     * Update basic information for the current user.
      *
-     * @param firstName first name of user
-     * @param lastName last name of user
-     * @param email email id of user
-     * @param langKey language key
-     * @param imageUrl image URL of user
+     * @param managedUserVM the managed user vm
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+    public void updateCurrentUser(ManagedUserVM managedUserVM) {
         userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setLangKey(langKey);
-            user.setImageUrl(imageUrl);
+            user.setFirstName(managedUserVM.getFirstName());
+            user.setLastName(managedUserVM.getLastName());
+            user.setEmail(managedUserVM.getEmail());
+            user.setLangKey(managedUserVM.getLangKey());
+            user.setImageUrl(managedUserVM.getImageUrl());
             log.debug("Changed Information for User: {}", user);
+
+            // Create and save the UserExtra entity
+            updateMember(managedUserVM, user);
         });
     }
 
     /**
      * Update all information for a specific user, and return the modified user.
      *
-     * @param userDTO user to update
+     * @param managedUserVM user to update
      * @return updated user
      */
-    public Optional<UserDTO> updateUser(UserDTO userDTO) {
+    public Optional<ManagedUserVM> updateUser(ManagedUserVM managedUserVM) {
         return Optional.of(userRepository
-            .findOne(userDTO.getId()))
+            .findOne(managedUserVM.getId()))
             .map(user -> {
-                user.setLogin(userDTO.getLogin());
-                user.setFirstName(userDTO.getFirstName());
-                user.setLastName(userDTO.getLastName());
-                user.setEmail(userDTO.getEmail());
-                user.setImageUrl(userDTO.getImageUrl());
-                user.setActivated(userDTO.isActivated());
-                user.setLangKey(userDTO.getLangKey());
+                user.setLogin(managedUserVM.getLogin());
+                user.setFirstName(managedUserVM.getFirstName());
+                user.setLastName(managedUserVM.getLastName());
+                user.setEmail(managedUserVM.getEmail());
+                user.setImageUrl(managedUserVM.getImageUrl());
+                user.setActivated(managedUserVM.isActivated());
+                user.setLangKey(managedUserVM.getLangKey());
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
-                userDTO.getAuthorities().stream()
+                managedUserVM.getAuthorities().stream()
                     .map(authorityRepository::findOne)
                     .forEach(managedAuthorities::add);
-                log.debug("Changed Information for User: {}", user);
                 return user;
             })
-            .map(UserDTO::new);
+            .map(updateMemberAndMapToManagedUserVm(managedUserVM));
+    }
+
+    private Function<User, ManagedUserVM> updateMemberAndMapToManagedUserVm(ManagedUserVM managedUserVM) {
+        return u -> {
+            final Member newMember = updateMember(managedUserVM, u);
+            ManagedUserVM newManagedUserVM = new ManagedUserVM(new UserDTO(u), memberMapper.toDto(newMember));
+            log.debug("Changed Information for User: {}", newManagedUserVM);
+            return newManagedUserVM;
+        };
+    }
+
+    private Member updateMember(final ManagedUserVM managedUserVM, final User user) {
+        final Member member = Optional.ofNullable(memberRepository
+            .findOne(user.getId()))
+            .orElseGet(Member::new);
+        member.setUser(user);
+        member.setPhoneNumber(managedUserVM.getPhoneNumber());
+
+        final byte[] resizeImageInByte = resizePhoto(managedUserVM.getPhoto());
+        member.setPhoto(resizeImageInByte);
+        member.setPhotoContentType("image/jpeg");
+
+        memberRepository.save(member);
+        log.debug("Created Information for Member: {}", member);
+        return member;
+    }
+
+    private byte[] resizePhoto(final byte[] photo) {
+
+        if (photo == null) {
+            return null;
+        }
+
+        byte[] resizeImageInByte = null;
+
+        try {
+            //transform byte array into buffered image
+            final InputStream in = new ByteArrayInputStream(photo);
+            final BufferedImage originalImage = ImageIO.read(in);
+
+            //resize and optimize
+            final int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+            final BufferedImage resizeImageJpg = resizeImage(originalImage, type);
+
+            //rewrite image in byte array
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(resizeImageJpg, "jpg", baos);
+            baos.flush();
+            resizeImageInByte = baos.toByteArray();
+            baos.close();
+
+        } catch (IOException e) {
+            log.error("Error in image resizing", e);
+        }
+        return resizeImageInByte;
+    }
+
+    private static BufferedImage resizeImage(final BufferedImage originalImage, final int type) {
+        final int height = originalImage.getHeight();
+        final int width = originalImage.getWidth();
+        final int maxSize = min(height, width);
+        final int x = (width - maxSize) / 2;
+        final int y = (height - maxSize) / 2;
+
+        final BufferedImage cropImage = originalImage.getSubimage(x, y, maxSize, maxSize);
+        final BufferedImage resizedImage = new BufferedImage(IMG_DIMENSION, IMG_DIMENSION, type);
+        final Graphics2D graphics = resizedImage.createGraphics();
+        graphics.drawImage(cropImage, 0, 0, IMG_DIMENSION, IMG_DIMENSION, null);
+        graphics.dispose();
+        graphics.setComposite(AlphaComposite.Src);
+
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        return resizedImage;
     }
 
     public void deleteUser(String login) {
@@ -219,6 +307,19 @@ public class UserService {
             user.setPassword(encryptedPassword);
             log.debug("Changed password for User: {}", user);
         });
+    }
+
+    /**
+     * Gets managed user.
+     *
+     * @return the managed user
+     */
+    public ManagedUserVM getManagedUser() {
+        final User userWithAuthorities = getUserWithAuthorities();
+        final Member member = Optional.ofNullable(memberRepository
+            .findOne(userWithAuthorities.getId()))
+            .orElseGet(Member::new);
+        return new ManagedUserVM(new UserDTO(userWithAuthorities), memberMapper.toDto(member));
     }
 
     @Transactional(readOnly = true)
@@ -264,4 +365,5 @@ public class UserService {
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
     }
+
 }

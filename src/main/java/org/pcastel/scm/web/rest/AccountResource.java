@@ -1,18 +1,15 @@
 package org.pcastel.scm.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-
+import org.apache.commons.lang3.StringUtils;
 import org.pcastel.scm.domain.User;
 import org.pcastel.scm.repository.UserRepository;
 import org.pcastel.scm.security.SecurityUtils;
 import org.pcastel.scm.service.MailService;
 import org.pcastel.scm.service.UserService;
-import org.pcastel.scm.service.dto.UserDTO;
+import org.pcastel.scm.web.rest.util.HeaderUtil;
 import org.pcastel.scm.web.rest.vm.KeyAndPasswordVM;
 import org.pcastel.scm.web.rest.vm.ManagedUserVM;
-import org.pcastel.scm.web.rest.util.HeaderUtil;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Optional;
 
 /**
  * REST controller for managing the current user's account.
@@ -41,7 +38,7 @@ public class AccountResource {
     private final MailService mailService;
 
     public AccountResource(UserRepository userRepository, UserService userService,
-            MailService mailService) {
+                           MailService mailService) {
 
         this.userRepository = userRepository;
         this.userService = userService;
@@ -55,7 +52,7 @@ public class AccountResource {
      * @return the ResponseEntity with status 201 (Created) if the user is registered or 400 (Bad Request) if the login or email is already in use
      */
     @PostMapping(path = "/register",
-        produces={MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @Timed
     public ResponseEntity registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
 
@@ -76,7 +73,7 @@ public class AccountResource {
                     mailService.sendActivationEmail(user);
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 })
-        );
+            );
     }
 
     /**
@@ -113,9 +110,9 @@ public class AccountResource {
      */
     @GetMapping("/account")
     @Timed
-    public ResponseEntity<UserDTO> getAccount() {
-        return Optional.ofNullable(userService.getUserWithAuthorities())
-            .map(user -> new ResponseEntity<>(new UserDTO(user), HttpStatus.OK))
+    public ResponseEntity<ManagedUserVM> getAccount() {
+        return Optional.ofNullable(userService.getManagedUser())
+            .map(managedUser -> new ResponseEntity<>(managedUser, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
@@ -136,8 +133,7 @@ public class AccountResource {
         return userRepository
             .findOneByLogin(userLogin)
             .map(u -> {
-                userService.updateUser(managedUserVM.getFirstName(), managedUserVM.getLastName(), managedUserVM.getEmail(),
-                    managedUserVM.getLangKey(), managedUserVM.getImageUrl());
+                userService.updateCurrentUser(managedUserVM);
                 return new ResponseEntity(HttpStatus.OK);
             })
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
@@ -192,8 +188,8 @@ public class AccountResource {
             return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
         }
         return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
-              .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-              .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            .map(user -> new ResponseEntity<String>(HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     private boolean checkPasswordLength(String password) {
