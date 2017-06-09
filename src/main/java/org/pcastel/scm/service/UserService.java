@@ -1,5 +1,9 @@
 package org.pcastel.scm.service;
 
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.REST;
+import com.flickr4java.flickr.uploader.UploadMetaData;
 import org.pcastel.scm.config.Constants;
 import org.pcastel.scm.domain.Authority;
 import org.pcastel.scm.domain.Member;
@@ -12,6 +16,7 @@ import org.pcastel.scm.security.SecurityUtils;
 import org.pcastel.scm.service.dto.UserDTO;
 import org.pcastel.scm.service.mapper.MemberMapper;
 import org.pcastel.scm.service.util.RandomUtil;
+import org.pcastel.scm.web.rest.errors.CustomParameterizedException;
 import org.pcastel.scm.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -177,7 +179,29 @@ public class UserService {
 
             // Create and save the UserExtra entity
             updateMember(managedUserVM, user);
+
+            // Save Photo to Flickr
+            savePhotoToFlickr(managedUserVM);
         });
+    }
+
+    private void savePhotoToFlickr(ManagedUserVM managedUserVM) {
+        final String apiKey = "f49282b95fa7192df773a0f816b42676";
+        final String sharedSecret = "c00a01afe025e5da";
+        final Flickr flickr = new Flickr(apiKey, sharedSecret, new REST());
+        try {
+            final UploadMetaData metaData = new UploadMetaData();
+            metaData.setContentType(Flickr.CONTENTTYPE_PHOTO);
+            metaData.setHidden(true);
+            metaData.setPublicFlag(false);
+            metaData.setFilename(managedUserVM.getFirstName() + "_" + managedUserVM.getLastName());
+            flickr.getUploader().upload(managedUserVM.getPhoto(), metaData);
+        } catch (FlickrException e) {
+            log.error(e.getErrorMessage(), e);
+            final Map<String, String> myMap = new HashMap<>();
+            myMap.put(e.getErrorCode(), e.getErrorMessage());
+            throw new CustomParameterizedException("unable to upload to flickr", myMap);
+        }
     }
 
     /**

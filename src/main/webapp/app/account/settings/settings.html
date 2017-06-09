@@ -115,6 +115,24 @@
                         </p>
                     </div>
                 </div>
+                <div class="form-group" ngf-drop ngf-change="vm.setPhoto($file)" ngf-pattern="'image/*'">
+                    <label class="control-label" data-translate="scmApp.settingsAccount.photo" for="field_photo">Photo</label>
+                    <div>
+                        <img data-ng-src="{{'data:' + vm.settingsAccount.photoContentType + ';base64,' + vm.settingsAccount.photo}}" style="max-height: 100px;"
+                            ng-if="vm.settingsAccount.photo" alt="member image" />
+                        <div ng-if="vm.settingsAccount.photo" class="help-block clearfix">
+                            <span class="pull-left">{{vm.settingsAccount.photoContentType}}, {{vm.byteSize(vm.settingsAccount.photo)}}</span>
+                            <button type="button" ng-click="vm.settingsAccount.photo=null;vm.settingsAccount.photoContentType=null;" class="btn btn-default btn-xs pull-right">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </div>
+                        <button type="button" ngf-select class="btn btn-default btn-block" ngf-change="vm.setPhoto($file)" accept="image/*" data-translate="entity.action.addimage">
+                            Add image
+                        </button>
+                    </div>
+                    <input type="hidden" class="form-control" name="photo" id="field_photo" ng-model="vm.settingsAccount.photo" />
+                    <input type="hidden" class="form-control" name="photoContentType" id="field_photoContentType" ng-model="vm.settingsAccount.photoContentType"/>
+                </div>
                 <div class="form-group">
                     <label for="langKey" data-translate="settings.form.language">Language</label>
                     <select id="langKey" name="langKey" class="form-control" ng-model="vm.settingsAccount.langKey" ng-controller="JhiLanguageController as languageVm" ng-options="code as (code | findLanguageFromKey) for code in languageVm.languages"></select>
