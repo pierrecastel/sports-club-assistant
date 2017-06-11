@@ -4,6 +4,7 @@ import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.FlickrException;
 import com.flickr4java.flickr.REST;
 import com.flickr4java.flickr.uploader.UploadMetaData;
+import org.imgscalr.Scalr;
 import org.pcastel.scm.config.Constants;
 import org.pcastel.scm.domain.Authority;
 import org.pcastel.scm.domain.Member;
@@ -27,11 +28,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.lang.StrictMath.min;
 
 /**
  * Service class for managing users.
@@ -40,6 +48,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserService {
 
+    private static final int IMG_DIMENSION = 300;
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
@@ -177,11 +186,12 @@ public class UserService {
             user.setImageUrl(managedUserVM.getImageUrl());
             log.debug("Changed Information for User: {}", user);
 
-            // Create and save the UserExtra entity
-            updateMember(managedUserVM, user);
 
             // Save Photo to Flickr
-            savePhotoToFlickr(managedUserVM);
+//            savePhotoToFlickr(managedUserVM);
+
+            // Create and save the UserExtra entity
+            updateMember(managedUserVM, user);
         });
     }
 
@@ -246,9 +256,76 @@ public class UserService {
             .orElseGet(Member::new);
         member.setUser(user);
         member.setPhoneNumber(managedUserVM.getPhoneNumber());
+
+        final byte[] resizeImageInByte = resizePhoto(managedUserVM);
+        member.setPhoto(resizeImageInByte);
+
         memberRepository.save(member);
         log.debug("Created Information for Member: {}", member);
         return member;
+    }
+
+    private byte[] resizePhoto(ManagedUserVM managedUserVM) {
+        byte[] resizeImageInByte = null;
+
+        try {
+            //transform byte array into buffered image
+            final InputStream in = new ByteArrayInputStream(managedUserVM.getPhoto());
+            final BufferedImage originalImage = ImageIO.read(in);
+
+
+            // TODO test à supprimer
+            ImageIO.write(originalImage, "jpg", new File(
+                "c:/test_tmp/original.jpg"));
+
+            //resize and optimize
+            final int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+            final BufferedImage resizeImageJpg = resizeImage(originalImage, type);
+
+            // TODO test à supprimer
+            ImageIO.write(resizeImageJpg, "jpg", new File(
+                "c:/test_tmp/resized.jpg"));
+
+            final BufferedImage scaledImage = Scalr.resize(originalImage, 200);
+
+            // TODO test à supprimer
+            ImageIO.write(scaledImage, "jpg", new File(
+                "c:/test_tmp/scaledImage.jpg"));
+
+            //rewrite image in byte array
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(resizeImageJpg, "jpg", baos);
+            baos.flush();
+            resizeImageInByte = baos.toByteArray();
+            baos.close();
+
+        } catch (IOException e) {
+            // TODO log
+            e.printStackTrace();
+        }
+        return resizeImageInByte;
+    }
+
+
+    private static BufferedImage resizeImage(final BufferedImage originalImage, final int type) {
+        final int height = originalImage.getHeight();
+        final int width = originalImage.getWidth();
+        final int maxSize = min(height, width);
+        final int x = (width - maxSize) / 2;
+        final int y = (height - maxSize) / 2;
+
+        final BufferedImage cropImage = originalImage.getSubimage(x, y, maxSize, maxSize);
+        final BufferedImage resizedImage = new BufferedImage(IMG_DIMENSION, IMG_DIMENSION, type);
+        final Graphics2D graphics = resizedImage.createGraphics();
+        graphics.drawImage(cropImage, 0, 0, IMG_DIMENSION, IMG_DIMENSION, null);
+        graphics.dispose();
+        graphics.setComposite(AlphaComposite.Src);
+
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        return resizedImage;
     }
 
     public void deleteUser(String login) {

@@ -367,6 +367,13 @@
             <artifactId>flickr4java</artifactId>
             <version>2.16</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+        </dependency>
+
     </dependencies>
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
