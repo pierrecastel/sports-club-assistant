@@ -236,9 +236,7 @@ public class UserService {
     }
 
     private Member updateMember(final ManagedUserVM managedUserVM, final User user) {
-        final Member member = Optional.ofNullable(memberRepository
-            .findOne(user.getId()))
-            .orElseGet(Member::new);
+        final Member member = getMember(user.getId());
         member.setUser(user);
         member.setPhoneNumber(managedUserVM.getPhoneNumber());
 
@@ -325,17 +323,31 @@ public class UserService {
      *
      * @return the managed user
      */
-    public ManagedUserVM getManagedUser() {
+    public ManagedUserVM getCurrentUser() {
         final User userWithAuthorities = getUserWithAuthorities();
-        final Member member = Optional.ofNullable(memberRepository
-            .findOne(userWithAuthorities.getId()))
-            .orElseGet(Member::new);
-        return new ManagedUserVM(new UserDTO(userWithAuthorities), memberMapper.toDto(member));
+        return getManagedUser(userWithAuthorities);
+    }
+
+    private ManagedUserVM getManagedUser(final User user) {
+        final Member member = getMember(user.getId());
+        return new ManagedUserVM(new UserDTO(user), memberMapper.toDto(member));
+    }
+
+    public Page<ManagedUserVM> getAllManagedUsers(Pageable pageable) {
+        Page<User> users = getAllUsers(pageable);
+        return users.map(this::getManagedUser);
     }
 
     @Transactional(readOnly = true)
-    public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
+    private Member getMember(final Long id) {
+        return Optional.ofNullable(memberRepository
+            .findOne(id))
+            .orElseGet(Member::new);
+    }
+
+    @Transactional(readOnly = true)
+    private Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER);
     }
 
     @Transactional(readOnly = true)
