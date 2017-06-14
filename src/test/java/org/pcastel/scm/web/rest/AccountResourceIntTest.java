@@ -131,7 +131,7 @@ public class AccountResourceIntTest {
         user.setImageUrl("http://placehold.it/50x50");
         user.setLangKey("en");
         user.setAuthorities(authorities);
-        when(mockUserService.getManagedUser()).thenReturn(new ManagedUserVM(new UserDTO(user), new MemberDTO()));
+        when(mockUserService.getCurrentUser()).thenReturn(new ManagedUserVM(new UserDTO(user), new MemberDTO()));
 
         restUserMockMvc.perform(get("/api/account")
             .accept(MediaType.APPLICATION_JSON))

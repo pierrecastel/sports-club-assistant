@@ -111,7 +111,7 @@ public class AccountResource {
     @GetMapping("/account")
     @Timed
     public ResponseEntity<ManagedUserVM> getAccount() {
-        return Optional.ofNullable(userService.getManagedUser())
+        return Optional.ofNullable(userService.getCurrentUser())
             .map(managedUser -> new ResponseEntity<>(managedUser, HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
