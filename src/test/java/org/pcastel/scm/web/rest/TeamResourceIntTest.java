@@ -71,7 +71,7 @@ public class TeamResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        TeamResource teamResource = new TeamResource(teamService);
+        final TeamResource teamResource = new TeamResource(teamService);
         this.restTeamMockMvc = MockMvcBuilders.standaloneSetup(teamResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -129,7 +129,7 @@ public class TeamResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(teamDTO)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Alice in the database
+        // Validate the Team in the database
         List<Team> teamList = teamRepository.findAll();
         assertThat(teamList).hasSize(databaseSizeBeforeCreate);
     }

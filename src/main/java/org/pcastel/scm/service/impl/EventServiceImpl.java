@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 /**
  * Service Implementation for managing Event.
@@ -22,7 +21,7 @@ import java.util.List;
 public class EventServiceImpl implements EventService{
 
     private final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
-    
+
     private final EventRepository eventRepository;
 
     private final EventMapper eventMapper;
@@ -43,13 +42,12 @@ public class EventServiceImpl implements EventService{
         log.debug("Request to save Event : {}", eventDTO);
         Event event = eventMapper.toEntity(eventDTO);
         event = eventRepository.save(event);
-        EventDTO result = eventMapper.toDto(event);
-        return result;
+        return eventMapper.toDto(event);
     }
 
     /**
      *  Get all the events.
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
@@ -57,8 +55,8 @@ public class EventServiceImpl implements EventService{
     @Transactional(readOnly = true)
     public Page<EventDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Events");
-        Page<Event> result = eventRepository.findAll(pageable);
-        return result.map(event -> eventMapper.toDto(event));
+        return eventRepository.findAll(pageable)
+            .map(eventMapper::toDto);
     }
 
     /**
@@ -72,8 +70,7 @@ public class EventServiceImpl implements EventService{
     public EventDTO findOne(Long id) {
         log.debug("Request to get Event : {}", id);
         Event event = eventRepository.findOneWithEagerRelationships(id);
-        EventDTO eventDTO = eventMapper.toDto(event);
-        return eventDTO;
+        return eventMapper.toDto(event);
     }
 
     /**

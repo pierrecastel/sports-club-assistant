@@ -33,7 +33,7 @@ public class EventResource {
     private final Logger log = LoggerFactory.getLogger(EventResource.class);
 
     private static final String ENTITY_NAME = "event";
-        
+
     private final EventService eventService;
 
     public EventResource(EventService eventService) {
@@ -66,7 +66,7 @@ public class EventResource {
      * @param eventDTO the eventDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated eventDTO,
      * or with status 400 (Bad Request) if the eventDTO is not valid,
-     * or with status 500 (Internal Server Error) if the eventDTO couldnt be updated
+     * or with status 500 (Internal Server Error) if the eventDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/events")
@@ -124,5 +124,4 @@ public class EventResource {
         eventService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
 }

@@ -18,7 +18,7 @@ public interface MemberService {
 
     /**
      *  Get all the members.
-     *  
+     *
      *  @return the list of entities
      */
     List<MemberDTO> findAll();

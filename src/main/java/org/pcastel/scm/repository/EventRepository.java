@@ -12,8 +12,7 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface EventRepository extends JpaRepository<Event,Long> {
-
+public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select distinct event from Event event left join fetch event.participants")
     List<Event> findAllWithEagerRelationships();
 

@@ -33,7 +33,7 @@ public class TeamResource {
     private final Logger log = LoggerFactory.getLogger(TeamResource.class);
 
     private static final String ENTITY_NAME = "team";
-        
+
     private final TeamService teamService;
 
     public TeamResource(TeamService teamService) {
@@ -66,7 +66,7 @@ public class TeamResource {
      * @param teamDTO the teamDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated teamDTO,
      * or with status 400 (Bad Request) if the teamDTO is not valid,
-     * or with status 500 (Internal Server Error) if the teamDTO couldnt be updated
+     * or with status 500 (Internal Server Error) if the teamDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/teams")
@@ -124,5 +124,4 @@ public class TeamResource {
         teamService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
 }

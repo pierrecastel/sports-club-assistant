@@ -18,7 +18,7 @@ public interface LocationService {
 
     /**
      *  Get all the locations.
-     *  
+     *
      *  @return the list of entities
      */
     List<LocationDTO> findAll();

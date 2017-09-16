@@ -7,8 +7,8 @@ import org.pcastel.scm.service.dto.MemberDTO;
 import org.pcastel.scm.service.mapper.MemberMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService{
 
     private final Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
-    
+
     private final MemberRepository memberRepository;
 
     private final MemberMapper memberMapper;
@@ -43,24 +43,21 @@ public class MemberServiceImpl implements MemberService{
         log.debug("Request to save Member : {}", memberDTO);
         Member member = memberMapper.toEntity(memberDTO);
         member = memberRepository.save(member);
-        MemberDTO result = memberMapper.toDto(member);
-        return result;
+        return memberMapper.toDto(member);
     }
 
     /**
      *  Get all the members.
-     *  
+     *
      *  @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
     public List<MemberDTO> findAll() {
         log.debug("Request to get all Members");
-        List<MemberDTO> result = memberRepository.findAll().stream()
+        return memberRepository.findAll().stream()
             .map(memberMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
-
-        return result;
     }
 
     /**
@@ -74,8 +71,7 @@ public class MemberServiceImpl implements MemberService{
     public MemberDTO findOne(Long id) {
         log.debug("Request to get Member : {}", id);
         Member member = memberRepository.findOne(id);
-        MemberDTO memberDTO = memberMapper.toDto(member);
-        return memberDTO;
+        return memberMapper.toDto(member);
     }
 
     /**

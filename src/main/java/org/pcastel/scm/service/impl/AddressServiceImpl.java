@@ -7,8 +7,8 @@ import org.pcastel.scm.service.dto.AddressDTO;
 import org.pcastel.scm.service.mapper.AddressMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class AddressServiceImpl implements AddressService{
 
     private final Logger log = LoggerFactory.getLogger(AddressServiceImpl.class);
-    
+
     private final AddressRepository addressRepository;
 
     private final AddressMapper addressMapper;
@@ -43,24 +43,21 @@ public class AddressServiceImpl implements AddressService{
         log.debug("Request to save Address : {}", addressDTO);
         Address address = addressMapper.toEntity(addressDTO);
         address = addressRepository.save(address);
-        AddressDTO result = addressMapper.toDto(address);
-        return result;
+        return addressMapper.toDto(address);
     }
 
     /**
      *  Get all the addresses.
-     *  
+     *
      *  @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
     public List<AddressDTO> findAll() {
         log.debug("Request to get all Addresses");
-        List<AddressDTO> result = addressRepository.findAll().stream()
+        return addressRepository.findAll().stream()
             .map(addressMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
-
-        return result;
     }
 
     /**
@@ -74,8 +71,7 @@ public class AddressServiceImpl implements AddressService{
     public AddressDTO findOne(Long id) {
         log.debug("Request to get Address : {}", id);
         Address address = addressRepository.findOne(id);
-        AddressDTO addressDTO = addressMapper.toDto(address);
-        return addressDTO;
+        return addressMapper.toDto(address);
     }
 
     /**

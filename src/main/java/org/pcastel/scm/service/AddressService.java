@@ -18,7 +18,7 @@ public interface AddressService {
 
     /**
      *  Get all the addresses.
-     *  
+     *
      *  @return the list of entities
      */
     List<AddressDTO> findAll();

@@ -3,46 +3,29 @@
 
     angular
         .module('scmApp')
-        .filter('findLanguageFromKey', findLanguageFromKey);
+        .filter('findLanguageFromKey', findLanguageFromKey)
+        .filter('findLanguageRtlFromKey', findLanguageRtlFromKey);
+
+    var languages = {
+        'en': { name: 'English' },
+        'fr': { name: 'Français' }
+        // jhipster-needle-i18n-language-key-pipe - JHipster will add/remove languages in this object
+    };
 
     function findLanguageFromKey() {
         return findLanguageFromKeyFilter;
 
         function findLanguageFromKeyFilter(lang) {
-            return {
-                'ca': 'Català',
-                'cs': 'Český',
-                'da': 'Dansk',
-                'de': 'Deutsch',
-                'el': 'Ελληνικά',
-                'en': 'English',
-                'es': 'Español',
-                'et': 'Eesti',
-                'fr': 'Français',
-                'gl': 'Galego',
-                'hu': 'Magyar',
-                'hi': 'हिंदी',
-                'hy': 'Հայերեն',
-                'it': 'Italiano',
-                'ja': '日本語',
-                'ko': '한국어',
-                'mr': 'मराठी',
-                'nl': 'Nederlands',
-                'pl': 'Polski',
-                'pt-br': 'Português (Brasil)',
-                'pt-pt': 'Português',
-                'ro': 'Română',
-                'ru': 'Русский',
-                'sk': 'Slovenský',
-                'sr': 'Srpski',
-                'sv': 'Svenska',
-                'ta': 'தமிழ்',
-                'th': 'ไทย',
-                'tr': 'Türkçe',
-                'vi': 'Tiếng Việt',
-                'zh-cn': '中文（简体）',
-                'zh-tw': '繁體中文'
-            }[lang];
+            return languages[lang].name;
         }
     }
+
+    function findLanguageRtlFromKey() {
+        return findLanguageRtlFromKeyFilter;
+
+        function findLanguageRtlFromKeyFilter(lang) {
+            return languages[lang].rtl;
+        }
+    }
+
 })();
