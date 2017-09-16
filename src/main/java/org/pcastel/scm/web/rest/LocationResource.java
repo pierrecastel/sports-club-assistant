@@ -27,7 +27,7 @@ public class LocationResource {
     private final Logger log = LoggerFactory.getLogger(LocationResource.class);
 
     private static final String ENTITY_NAME = "location";
-        
+
     private final LocationService locationService;
 
     public LocationResource(LocationService locationService) {
@@ -60,7 +60,7 @@ public class LocationResource {
      * @param locationDTO the locationDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated locationDTO,
      * or with status 400 (Bad Request) if the locationDTO is not valid,
-     * or with status 500 (Internal Server Error) if the locationDTO couldnt be updated
+     * or with status 500 (Internal Server Error) if the locationDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/locations")
@@ -86,7 +86,7 @@ public class LocationResource {
     public List<LocationDTO> getAllLocations() {
         log.debug("REST request to get all Locations");
         return locationService.findAll();
-    }
+        }
 
     /**
      * GET  /locations/:id : get the "id" location.
@@ -115,5 +115,4 @@ public class LocationResource {
         locationService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
 }

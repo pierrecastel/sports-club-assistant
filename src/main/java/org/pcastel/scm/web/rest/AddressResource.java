@@ -27,7 +27,7 @@ public class AddressResource {
     private final Logger log = LoggerFactory.getLogger(AddressResource.class);
 
     private static final String ENTITY_NAME = "address";
-        
+
     private final AddressService addressService;
 
     public AddressResource(AddressService addressService) {
@@ -60,7 +60,7 @@ public class AddressResource {
      * @param addressDTO the addressDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated addressDTO,
      * or with status 400 (Bad Request) if the addressDTO is not valid,
-     * or with status 500 (Internal Server Error) if the addressDTO couldnt be updated
+     * or with status 500 (Internal Server Error) if the addressDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/addresses")
@@ -86,7 +86,7 @@ public class AddressResource {
     public List<AddressDTO> getAllAddresses() {
         log.debug("REST request to get all Addresses");
         return addressService.findAll();
-    }
+        }
 
     /**
      * GET  /addresses/:id : get the "id" address.
@@ -115,5 +115,4 @@ public class AddressResource {
         addressService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
-
 }

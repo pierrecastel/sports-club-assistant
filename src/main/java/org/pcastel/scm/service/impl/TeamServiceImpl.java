@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 /**
  * Service Implementation for managing Team.
@@ -22,7 +21,7 @@ import java.util.List;
 public class TeamServiceImpl implements TeamService{
 
     private final Logger log = LoggerFactory.getLogger(TeamServiceImpl.class);
-    
+
     private final TeamRepository teamRepository;
 
     private final TeamMapper teamMapper;
@@ -43,13 +42,12 @@ public class TeamServiceImpl implements TeamService{
         log.debug("Request to save Team : {}", teamDTO);
         Team team = teamMapper.toEntity(teamDTO);
         team = teamRepository.save(team);
-        TeamDTO result = teamMapper.toDto(team);
-        return result;
+        return teamMapper.toDto(team);
     }
 
     /**
      *  Get all the teams.
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
@@ -57,8 +55,8 @@ public class TeamServiceImpl implements TeamService{
     @Transactional(readOnly = true)
     public Page<TeamDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Teams");
-        Page<Team> result = teamRepository.findAll(pageable);
-        return result.map(team -> teamMapper.toDto(team));
+        return teamRepository.findAll(pageable)
+            .map(teamMapper::toDto);
     }
 
     /**
@@ -72,8 +70,7 @@ public class TeamServiceImpl implements TeamService{
     public TeamDTO findOne(Long id) {
         log.debug("Request to get Team : {}", id);
         Team team = teamRepository.findOneWithEagerRelationships(id);
-        TeamDTO teamDTO = teamMapper.toDto(team);
-        return teamDTO;
+        return teamMapper.toDto(team);
     }
 
     /**

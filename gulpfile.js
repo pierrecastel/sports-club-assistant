@@ -1,4 +1,4 @@
-// Generated on 2017-06-05 using generator-jhipster 4.5.1
+// Generated on 2017-09-16 using generator-jhipster 4.8.2
 'use strict';
 
 var gulp = require('gulp'),
@@ -118,7 +118,8 @@ gulp.task('ngconstant:dev', function () {
         name: 'scmApp',
         constants: {
             VERSION: util.parseVersion(),
-            DEBUG_INFO_ENABLED: true
+            DEBUG_INFO_ENABLED: true,
+            BUILD_TIMESTAMP: ''
         },
         template: config.constantTemplate,
         stream: true
@@ -132,7 +133,8 @@ gulp.task('ngconstant:prod', function () {
         name: 'scmApp',
         constants: {
             VERSION: util.parseVersion(),
-            DEBUG_INFO_ENABLED: false
+            DEBUG_INFO_ENABLED: false,
+            BUILD_TIMESTAMP: new Date().getTime()
         },
         template: config.constantTemplate,
         stream: true

@@ -91,7 +91,7 @@ public class MemberResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        MemberResource memberResource = new MemberResource(memberService);
+        final MemberResource memberResource = new MemberResource(memberService);
         this.restMemberMockMvc = MockMvcBuilders.standaloneSetup(memberResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -161,7 +161,7 @@ public class MemberResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(memberDTO)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Alice in the database
+        // Validate the Member in the database
         List<Member> memberList = memberRepository.findAll();
         assertThat(memberList).hasSize(databaseSizeBeforeCreate);
     }

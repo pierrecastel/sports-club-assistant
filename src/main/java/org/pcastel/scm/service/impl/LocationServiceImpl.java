@@ -7,8 +7,8 @@ import org.pcastel.scm.service.dto.LocationDTO;
 import org.pcastel.scm.service.mapper.LocationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class LocationServiceImpl implements LocationService{
 
     private final Logger log = LoggerFactory.getLogger(LocationServiceImpl.class);
-    
+
     private final LocationRepository locationRepository;
 
     private final LocationMapper locationMapper;
@@ -43,24 +43,21 @@ public class LocationServiceImpl implements LocationService{
         log.debug("Request to save Location : {}", locationDTO);
         Location location = locationMapper.toEntity(locationDTO);
         location = locationRepository.save(location);
-        LocationDTO result = locationMapper.toDto(location);
-        return result;
+        return locationMapper.toDto(location);
     }
 
     /**
      *  Get all the locations.
-     *  
+     *
      *  @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
     public List<LocationDTO> findAll() {
         log.debug("Request to get all Locations");
-        List<LocationDTO> result = locationRepository.findAll().stream()
+        return locationRepository.findAll().stream()
             .map(locationMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
-
-        return result;
     }
 
     /**
@@ -74,8 +71,7 @@ public class LocationServiceImpl implements LocationService{
     public LocationDTO findOne(Long id) {
         log.debug("Request to get Location : {}", id);
         Location location = locationRepository.findOne(id);
-        LocationDTO locationDTO = locationMapper.toDto(location);
-        return locationDTO;
+        return locationMapper.toDto(location);
     }
 
     /**

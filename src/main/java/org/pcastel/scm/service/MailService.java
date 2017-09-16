@@ -22,7 +22,6 @@ import java.util.Locale;
  * Service for sending emails.
  * <p>
  * We use the @Async annotation to send emails asynchronously.
- * </p>
  */
 @Service
 public class MailService {
@@ -66,7 +65,11 @@ public class MailService {
             javaMailSender.send(mimeMessage);
             log.debug("Sent email to User '{}'", to);
         } catch (Exception e) {
-            log.warn("Email could not be sent to user '{}'", to, e);
+            if (log.isDebugEnabled()) {
+                log.warn("Email could not be sent to user '{}'", to, e);
+            } else {
+                log.warn("Email could not be sent to user '{}': {}", to, e.getMessage());
+            }
         }
     }
 

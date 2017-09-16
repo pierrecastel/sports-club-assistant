@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 
 /**
- * Performance test for the Event entity.
+ * Performance test for the Address entity.
  */
-class EventGatlingTest extends Simulation {
+class AddressGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
     // Log all HTTP requests
@@ -42,7 +42,7 @@ class EventGatlingTest extends Simulation {
         "Authorization" -> "${access_token}"
     )
 
-    val scn = scenario("Test the Event entity")
+    val scn = scenario("Test the Address entity")
         .exec(http("First unauthenticated request")
         .get("/api/account")
         .headers(headers_http)
@@ -60,26 +60,26 @@ class EventGatlingTest extends Simulation {
         .check(status.is(200)))
         .pause(10)
         .repeat(2) {
-            exec(http("Get all events")
-            .get("/api/events")
+            exec(http("Get all addresses")
+            .get("/api/addresses")
             .headers(headers_http_authenticated)
             .check(status.is(200)))
             .pause(10 seconds, 20 seconds)
-            .exec(http("Create new event")
-            .post("/api/events")
+            .exec(http("Create new address")
+            .post("/api/addresses")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "title":"SAMPLE_TEXT", "type":null, "date":"2020-01-01T00:00:00.000Z", "state":null, "numberOfPlaces":"0", "isHome":null, "comment":"SAMPLE_TEXT"}""")).asJSON
+            .body(StringBody("""{"id":null, "street":"SAMPLE_TEXT", "zipCode":"SAMPLE_TEXT", "city":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
-            .check(headerRegex("Location", "(.*)").saveAs("new_event_url"))).exitHereIfFailed
+            .check(headerRegex("Location", "(.*)").saveAs("new_address_url"))).exitHereIfFailed
             .pause(10)
             .repeat(5) {
-                exec(http("Get created event")
-                .get("${new_event_url}")
+                exec(http("Get created address")
+                .get("${new_address_url}")
                 .headers(headers_http_authenticated))
                 .pause(10)
             }
-            .exec(http("Delete created event")
-            .delete("${new_event_url}")
+            .exec(http("Delete created address")
+            .delete("${new_address_url}")
             .headers(headers_http_authenticated))
             .pause(10)
         }
@@ -87,6 +87,6 @@ class EventGatlingTest extends Simulation {
     val users = scenario("Users").exec(scn)
 
     setUp(
-        users.inject(rampUsers(100) over (1 minutes))
+        users.inject(rampUsers(Integer.getInteger("users", 100)) over (Integer.getInteger("ramp", 1) minutes))
     ).protocols(httpConf)
 }

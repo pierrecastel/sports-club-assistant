@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 
 /**
- * Performance test for the Member entity.
+ * Performance test for the Team entity.
  */
-class MemberGatlingTest extends Simulation {
+class TeamGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
     // Log all HTTP requests
@@ -42,7 +42,7 @@ class MemberGatlingTest extends Simulation {
         "Authorization" -> "${access_token}"
     )
 
-    val scn = scenario("Test the Member entity")
+    val scn = scenario("Test the Team entity")
         .exec(http("First unauthenticated request")
         .get("/api/account")
         .headers(headers_http)
@@ -60,26 +60,26 @@ class MemberGatlingTest extends Simulation {
         .check(status.is(200)))
         .pause(10)
         .repeat(2) {
-            exec(http("Get all members")
-            .get("/api/members")
+            exec(http("Get all teams")
+            .get("/api/teams")
             .headers(headers_http_authenticated)
             .check(status.is(200)))
             .pause(10 seconds, 20 seconds)
-            .exec(http("Create new member")
-            .post("/api/members")
+            .exec(http("Create new team")
+            .post("/api/teams")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "phoneNumber":"SAMPLE_TEXT", "mobilePhoneNumber":"SAMPLE_TEXT", "photo":null, "birthDate":"2020-01-01T00:00:00.000Z", "job":"SAMPLE_TEXT", "showInfo":null}""")).asJSON
+            .body(StringBody("""{"id":null, "name":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
-            .check(headerRegex("Location", "(.*)").saveAs("new_member_url"))).exitHereIfFailed
+            .check(headerRegex("Location", "(.*)").saveAs("new_team_url"))).exitHereIfFailed
             .pause(10)
             .repeat(5) {
-                exec(http("Get created member")
-                .get("${new_member_url}")
+                exec(http("Get created team")
+                .get("${new_team_url}")
                 .headers(headers_http_authenticated))
                 .pause(10)
             }
-            .exec(http("Delete created member")
-            .delete("${new_member_url}")
+            .exec(http("Delete created team")
+            .delete("${new_team_url}")
             .headers(headers_http_authenticated))
             .pause(10)
         }
@@ -87,6 +87,6 @@ class MemberGatlingTest extends Simulation {
     val users = scenario("Users").exec(scn)
 
     setUp(
-        users.inject(rampUsers(100) over (1 minutes))
+        users.inject(rampUsers(Integer.getInteger("users", 100)) over (Integer.getInteger("ramp", 1) minutes))
     ).protocols(httpConf)
 }
