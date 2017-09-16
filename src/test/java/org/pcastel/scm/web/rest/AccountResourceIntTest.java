@@ -285,6 +285,7 @@ public class AccountResourceIntTest {
             "Bob",              // firstName
             "Green",            // lastName
             "bob@example.com",  // email
+            "0123456789",      // phone
             true,               // activated
             "http://placehold.it/50x50", //imageUrl
             "fr",                   // langKey

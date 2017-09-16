@@ -58,13 +58,13 @@ public class UserService {
     private final AuthorityRepository authorityRepository;
 
     private final MemberRepository memberRepository;
-    private final CacheManager cacheManager;
 
     private final MemberMapper memberMapper;
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+
+    private final CacheManager cacheManager;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository
-        , MemberRepository memberRepository, MemberMapper memberMapper) {
+        , MemberRepository memberRepository, MemberMapper memberMapper, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
