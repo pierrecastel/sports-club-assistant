@@ -6,6 +6,11 @@
             "firstname.placeholder": "Votre prénom",
             "lastname": "Nom",
             "lastname.placeholder": "Votre nom",
+            "birthdate": "Date de naissance",
+            "birthdate.placeholder": "Votre date de naissance",
+            "showinfo": "J'accepte que les autres membres du club puissent consulter mes informations",
+            "job": "Métier",
+            "job.placeholder": "Votre métier",
             "language": "Langue",
             "button": "Sauvegarder",
             "photo": "Photo"

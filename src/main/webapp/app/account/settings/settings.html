@@ -107,6 +107,33 @@
                         </p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="control-label" for="birthDate" data-translate="settings.form.birthdate">Date de naissance</label>
+                    <div class="input-group">
+                        <input id="birthDate" type="text" class="form-control" name="birthDate" uib-datepicker-popup="{{dateformat}}" ng-model="vm.settingsAccount.birthDate" is-open="vm.datePickerOpenStatus.birthDate"
+                               required/>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="vm.openCalendar('birthDate')"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                    <div ng-show="form.birthdate.$invalid">
+                        <p class="help-block"
+                           ng-show="editForm.date.$error.required" data-translate="entity.validation.required">
+                            This field is required.
+                        </p>
+                    </div>
+                </div>
+<!-- 
+                <div class="form-group">
+                    <label class="control-label" data-translate="settings.form.birthdate" for="field_birthDate">Birth Date</label>
+                        <div class="input-group">
+                            <input id="field_birthDate" type="text" class="form-control" name="birthDate" uib-datepicker-popup="{{dateformat}}" ng-model="vm.settingsAccount.birthDate" is-open="vm.datePickerOpenStatus.birthDate"
+                            />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="vm.openCalendar('birthDate')"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                </div> -->
 
                 <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary" data-translate="settings.form.button">Save</button>
             </form>

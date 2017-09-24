@@ -193,7 +193,7 @@ public class UserService {
             cacheManager.getCache("users").evict(user.getLogin());
             log.debug("Changed Information for User: {}", user);
 
-            // Create and save the UserExtra entity
+            // Create and save the Member entity
             updateMember(managedUserVM, user);
         });
     }
@@ -239,10 +239,9 @@ public class UserService {
         final Member member = getMember(user.getId());
         member.setUser(user);
         member.setPhoneNumber(managedUserVM.getPhoneNumber());
-
-        final byte[] resizeImageInByte = resizePhoto(managedUserVM.getPhoto());
-        member.setPhoto(resizeImageInByte);
+        member.setPhoto(managedUserVM.getPhoto());
         member.setPhotoContentType("image/jpeg");
+        member.setBirthDate(managedUserVM.getBirthDate());
 
         memberRepository.save(member);
         log.debug("Created Information for Member: {}", member);

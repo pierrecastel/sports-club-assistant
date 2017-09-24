@@ -16,6 +16,8 @@
         vm.success = null;
         vm.byteSize = DataUtils.byteSize;
         vm.photoModified = false;
+        vm.datePickerOpenStatus = {};
+        vm.openCalendar = openCalendar;
 
         /**
          * Store the "settings account" in a separate variable, and not in the shared "account" variable.
@@ -31,7 +33,8 @@
                 imageUrl: account.imageUrl,
                 phoneNumber: account.phoneNumber,
                 photo: account.photo,
-                photoContentType: account.photoContentType
+                photoContentType: account.photoContentType,
+                birthDate: account.birthDate
             };
         };
 
@@ -72,5 +75,11 @@
                 });
             }
         };
+
+        vm.datePickerOpenStatus.birthDate = false;
+        
+        function openCalendar (date) {
+            vm.datePickerOpenStatus[date] = true;
+        }
     }
 })();
