@@ -1,4 +1,5 @@
 package org.pcastel.scm.web.rest;
+import org.pcastel.scm.config.Constants;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
@@ -168,7 +169,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -198,7 +199,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -211,7 +212,7 @@ public class AccountResourceIntTest {
                 .content(TestUtil.convertObjectToJsonBytes(invalidUser)))
             .andExpect(status().isBadRequest());
 
-        Optional<User> user = userRepository.findOneByEmail("funky@example.com");
+        Optional<User> user = userRepository.findOneByEmailIgnoreCase("funky@example.com");
         assertThat(user.isPresent()).isFalse();
     }
 
@@ -228,7 +229,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,               // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -258,7 +259,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,               // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -288,7 +289,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,               // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -319,7 +320,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -345,7 +346,7 @@ public class AccountResourceIntTest {
                 .content(TestUtil.convertObjectToJsonBytes(duplicatedUser)))
             .andExpect(status().is4xxClientError());
 
-        Optional<User> userDup = userRepository.findOneByEmail("alicejr@example.com");
+        Optional<User> userDup = userRepository.findOneByEmailIgnoreCase("alicejr@example.com");
         assertThat(userDup.isPresent()).isFalse();
     }
 
@@ -363,7 +364,7 @@ public class AccountResourceIntTest {
             "0123456789",      // phone
             true,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -388,6 +389,16 @@ public class AccountResourceIntTest {
                 .content(TestUtil.convertObjectToJsonBytes(duplicatedUser)))
             .andExpect(status().is4xxClientError());
 
+        // Duplicate email - with uppercase email address
+        final ManagedUserVM userWithUpperCaseEmail = new ManagedUserVM(validUser.getId(), "johnjr", validUser.getPassword(), validUser.getLogin(), validUser.getLastName(),
+                validUser.getEmail().toUpperCase(), true, validUser.getImageUrl(), validUser.getLangKey(), validUser.getCreatedBy(), validUser.getCreatedDate(), validUser.getLastModifiedBy(), validUser.getLastModifiedDate(), validUser.getAuthorities());
+
+        restMvc.perform(
+            post("/api/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(userWithUpperCaseEmail)))
+            .andExpect(status().is4xxClientError());
+
         Optional<User> userDup = userRepository.findOneByLogin("johnjr");
         assertThat(userDup.isPresent()).isFalse();
     }
@@ -405,7 +416,7 @@ public class AccountResourceIntTest {
             "0123456789",            // phone
             true,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -471,7 +482,7 @@ public class AccountResourceIntTest {
             "save-account@example.com",    // email
             false,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -516,7 +527,7 @@ public class AccountResourceIntTest {
             "invalid email",    // email
             false,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -530,7 +541,7 @@ public class AccountResourceIntTest {
                 .content(TestUtil.convertObjectToJsonBytes(userDTO)))
             .andExpect(status().isBadRequest());
 
-        assertThat(userRepository.findOneByEmail("invalid email")).isNotPresent();
+        assertThat(userRepository.findOneByEmailIgnoreCase("invalid email")).isNotPresent();
     }
 
     @Test
@@ -561,7 +572,7 @@ public class AccountResourceIntTest {
             "save-existing-email2@example.com",    // email
             false,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -599,7 +610,7 @@ public class AccountResourceIntTest {
             "save-existing-email-and-login@example.com",    // email
             false,                   // activated
             "http://placehold.it/50x50", //imageUrl
-            "fr",                   // langKey
+            Constants.DEFAULT_LANGUAGE,// langKey
             null,                   // createdBy
             null,                   // createdDate
             null,                   // lastModifiedBy
@@ -697,6 +708,21 @@ public class AccountResourceIntTest {
 
         restMvc.perform(post("/api/account/reset-password/init")
             .content("password-reset@example.com"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @Transactional
+    public void testRequestPasswordResetUpperCaseEmail() throws Exception {
+        User user = new User();
+        user.setPassword(RandomStringUtils.random(60));
+        user.setActivated(true);
+        user.setLogin("password-reset");
+        user.setEmail("password-reset@example.com");
+        userRepository.saveAndFlush(user);
+
+        restMvc.perform(post("/api/account/reset-password/init")
+            .content("password-reset@EXAMPLE.COM"))
             .andExpect(status().isOk());
     }
 
