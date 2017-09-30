@@ -37,7 +37,7 @@ public class Address implements Serializable {
     @Column(name = "city", length = 100, nullable = false)
     private String city;
 
-    // jhipster-needle-entity-add-field - Jhipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
     }
@@ -84,7 +84,7 @@ public class Address implements Serializable {
     public void setCity(String city) {
         this.city = city;
     }
-    // jhipster-needle-entity-add-getters-setters - Jhipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
