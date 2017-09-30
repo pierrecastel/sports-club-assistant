@@ -36,6 +36,40 @@
             <p>
              <span data-translate="home.like">If you like JHipster, don't forget to give us a star on </span>&nbsp;<a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener" data-translate="home.github">GitHub</a>!
             </p>
+            <div style="height: 202px;">
+                <!--<calendar-md flex layout layout-fill-->
+                             <!--calendar-direction="direction"-->
+                             <!--on-prev-month="prevMonth"-->
+                             <!--on-next-month="nextMonth"-->
+                             <!--on-day-click="dayClick"-->
+                             <!--title-format="'MMMM y'"-->
+                             <!--ng-model='selectedDate'-->
+                             <!--day-format="'d'"-->
+                             <!--day-label-format="'EEE'"-->
+                             <!--day-label-tooltip-format="'EEEE'"-->
+                             <!--day-tooltip-format="'fullDate'"-->
+                             <!--week-starts-on="firstDayOfWeek"-->
+                             <!--day-content="setDayContent">-->
+                <!--</calendar-md>-->
+                <md-content id="calendar-demo" class="layout-fill ng-scope layout-column">
+                        <calendar-md calendar-direction="vm.direction"
+                                     on-prev-month="vm.prevMonth"
+                                     on-next-month="vm.nextMonth"
+                                     on-day-click="vm.dayClick"
+                                     title-format="'MMMM y'"
+                                     ng-model="vm.selectedDate"
+                                     day-format="'d'"
+                                     day-label-format="'EEE'"
+                                     day-label-tooltip-format="'EEEE'"
+                                     day-tooltip-format="'fullDate'"
+                                     week-starts-on="vm.firstDayOfWeek"
+                                     day-content="vm.setDayContent"
+                                     class="ng-pristine ng-untouched ng-valid layout-fill ng-isolate-scope layout-row flex"
+                                     aria-invalid="false">
+
+                    </calendar-md>
+                </md-content>
+            </div>
         </div>
     </div>
 </div>
